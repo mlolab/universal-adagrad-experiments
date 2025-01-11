@@ -1,0 +1,56 @@
+---
+name: "CI"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: "Test"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Setup Python and Poetry"
+        uses: ./.github/actions/setup-python-and-poetry
+
+      - name: "Run tests"
+        run: |
+          poetry run pytest
+
+  lint:
+    name: "Lint"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Setup Python and Poetry"
+        uses: ./.github/actions/setup-python-and-poetry
+
+      - name: "Run linter"
+        run: |
+          poetry run ruff check --output-format=github .
+
+  check_formatting:
+    name: "Check formatting"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Setup Python and Poetry"
+        uses: ./.github/actions/setup-python-and-poetry
+
+      - name: "Check formatting"
+        run: |
+          poetry run ruff format --check

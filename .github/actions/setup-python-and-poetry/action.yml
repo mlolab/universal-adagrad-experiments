@@ -1,0 +1,26 @@
+---
+name: "Setup Python and Poetry"
+description: "Set up Python and Poetry, and install dependencies"
+inputs:
+  python-version:
+    description: "Python version to use"
+    default: "3.12"
+  shell:
+    description: "Shell to use for run commands"
+    default: "bash"
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup poetry"
+      run: pipx install poetry
+      shell: "${{ inputs.shell }}"
+
+    - name: "Setup Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "poetry"
+
+    - name: "Poetry: Install dependencies"
+      run: poetry install
+      shell: "${{ inputs.shell }}"
